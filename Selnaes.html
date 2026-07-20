@@ -201,19 +201,90 @@
 
     let currentEditingIndex = -1;
 
-    // 11个人物数据（已移除梅琳与帕特里克）
+    // 11个人物数据（精确答案匹配）
     const suspects = [
-        { name: "托尔斯特·博尔孔斯基", gender: "男", cause: "（待查明）", rule: ["下落不明", "失踪"] },
-        { name: "安德烈·奥古斯特", gender: "男", cause: "（待查明）", rule: ["斧头", "砍死", "托尔斯特"] },
-        { name: "西蒙·洛德维奇", gender: "男", cause: "（待查明）", rule: ["艾萨克", "左轮", "射杀"] },
-        { name: "尼古莱·威姆斯特", gender: "男", cause: "（待查明）", rule: ["西蒙", "厨刀", "刺死"] },
-        { name: "安东尼奥·萨拉图多", gender: "男", cause: "（待查明）", rule: ["艾萨克", "左轮", "射杀"] },
-        { name: "玛利娅·赛尔纳斯", gender: "女", cause: "（待查明）", rule: ["托尔斯特", "斧头", "砍死"] },
-        { name: "艾萨克·斯托尔特", gender: "男", cause: "（待查明）", rule: ["安尼", "厨刀", "刺死"] },
-        { name: "奥格伯德·凯维奇", gender: "男", cause: "（待查明）", rule: ["托尔斯特", "斧头", "砍死"] },
-        { name: "安娜·菲奥波普", gender: "女", cause: "（待查明）", rule: ["凯恩", "手枪", "射杀"] },
-        { name: "安尼·洛德维奇", gender: "男", cause: "（待查明）", rule: ["奥格伯德", "勒死", "掐死"] },
-        { name: "凯恩·安迪纳斯", gender: "男", cause: "（待查明）", rule: ["艾萨克", "厨刀", "刺死"] }
+        { 
+            name: "托尔斯特·博尔孔斯基", 
+            gender: "男", 
+            cause: "（待查明）", 
+            // 精确答案列表：必须完全匹配以下字符串之一
+            exactAnswers: ["下落不明", "失踪"] 
+        },
+        { 
+            name: "安德烈·奥古斯特", 
+            gender: "男", 
+            cause: "（待查明）", 
+            exactAnswers: ["被托尔斯特·博尔孔斯基使用斧头砍死"] 
+        },
+        { 
+            name: "西蒙·洛德维奇", 
+            gender: "男", 
+            cause: "（待查明）", 
+            exactAnswers: [
+                "被艾萨克·斯托尔特使用左轮手枪射杀",
+                "被艾萨克·斯托尔特使用左轮射杀",
+                "被艾萨克·斯托尔特使用手枪射杀"
+            ] 
+        },
+        { 
+            name: "尼古莱·威姆斯特", 
+            gender: "男", 
+            cause: "（待查明）", 
+            exactAnswers: ["被西蒙·洛德维奇使用厨刀刺死"] 
+        },
+        { 
+            name: "安东尼奥·萨拉图多", 
+            gender: "男", 
+            cause: "（待查明）", 
+            exactAnswers: [
+                "被艾萨克·斯托尔特使用左轮手枪射杀",
+                "被艾萨克·斯托尔特使用左轮射杀",
+                "被艾萨克·斯托尔特使用手枪射杀"
+            ] 
+        },
+        { 
+            name: "玛利娅·赛尔纳斯", 
+            gender: "女", 
+            cause: "（待查明）", 
+            exactAnswers: ["被托尔斯特·博尔孔斯基使用斧头砍死"] 
+        },
+        { 
+            name: "艾萨克·斯托尔特", 
+            gender: "男", 
+            cause: "（待查明）", 
+            exactAnswers: ["被安尼·洛德维奇使用厨刀刺死"] 
+        },
+        { 
+            name: "奥格伯德·凯维奇", 
+            gender: "男", 
+            cause: "（待查明）", 
+            exactAnswers: ["被托尔斯特·博尔孔斯基使用斧头砍死"] 
+        },
+        { 
+            name: "安娜·菲奥波普", 
+            gender: "女", 
+            cause: "（待查明）", 
+            exactAnswers: [
+                "被凯恩·安迪纳斯使用左轮手枪射杀",
+                "被凯恩·安迪纳斯使用左轮射杀",
+                "被凯恩·安迪纳斯使用手枪射杀"
+            ] 
+        },
+        { 
+            name: "安尼·洛德维奇", 
+            gender: "男", 
+            cause: "（待查明）", 
+            exactAnswers: [
+                "被奥格伯德·凯维奇勒死",
+                "被奥格伯德·凯维奇掐死"
+            ] 
+        },
+        { 
+            name: "凯恩·安迪纳斯", 
+            gender: "男", 
+            cause: "（待查明）", 
+            exactAnswers: ["被艾萨克·斯托尔特使用厨刀刺死"] 
+        }
     ];
 
     function printText(text, cssClass = 'narrator') {
@@ -298,27 +369,27 @@
         }
 
         const person = suspects[currentEditingIndex];
-        const rules = person.rule;
-        if (!rules) {
-            alert("我的头开始疼了......也许这样行不通......");
-            return;
-        }
-
-        // 判断输入的文本是否包含规则中的任意关键词
+        
+        // 检查输入是否完全匹配预定义的答案（严格相等）
         let isCorrect = false;
-        for (let i = 0; i < rules.length; i++) {
-            if (inputValue.includes(rules[i])) {
-                isCorrect = true;
-                break;
+        if (person.exactAnswers && Array.isArray(person.exactAnswers)) {
+            // 遍历预定义答案列表，进行精确匹配
+            for (let i = 0; i < person.exactAnswers.length; i++) {
+                if (inputValue === person.exactAnswers[i]) {
+                    isCorrect = true;
+                    break;
+                }
             }
         }
 
         if (isCorrect) {
+            // 保存玩家输入的内容（即为最终显示的结局文本）
             localStorage.setItem(`suspect_${currentEditingIndex}_cause`, inputValue);
             closeModal();
             renderSuspects();
             checkAllSolved(); // 检查是否全部完成
         } else {
+            // 输入不匹配任意预定义答案
             alert("我的头开始疼了......也许这样行不通......");
         }
     }
