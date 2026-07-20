@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛尔纳斯旅馆 - 尘埃落定</title>
+    <!-- 引入像素字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* 1-bit 全局暗黑框架 */
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Press Start 2P', 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-image: radial-gradient(#000 10%, transparent 10%);
+            background-size: 2px 2px;
+        }
+
+        #game-container {
+            width: 95%;
+            max-width: 800px;
+            background-color: #000000;
+            border: 4px solid #ffffff;
+            padding: 20px;
+            box-shadow: 8px 8px 0px rgba(255, 255, 255, 0.2);
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        #story-text {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            line-height: 1.8;
+            font-size: 10px; /* 适应大量文字，缩小字号 */
+            letter-spacing: 0.5px;
+            white-space: pre-wrap;
+        }
+
+        #story-text::-webkit-scrollbar {
+            width: 6px;
+        }
+        #story-text::-webkit-scrollbar-track {
+            background: #000;
+            border-left: 1px solid #fff;
+        }
+        #story-text::-webkit-scrollbar-thumb {
+            background: #fff;
+        }
+
+        .p { margin-bottom: 20px; }
+        .highlight { color: #ffffff; font-weight: bold; }
+        .subtitle { color: #aaaaaa; font-size: 9px; text-align: center; margin-bottom: 20px; }
+        
+        .chapter-title {
+            color: #ffffff;
+            text-align: center;
+            font-size: 12px;
+            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
+            padding: 10px 0;
+            margin: 20px 0;
+        }
+
+        /* --- 选项按钮容器 --- */
+        #choices-container {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            align-items: center;
+        }
+
+        /* --- 像素风格选项按钮 --- */
+        .choice-btn {
+            background: #000;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            padding: 12px 20px;
+            font-family: inherit;
+            font-size: 11px;
+            cursor: pointer;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            transition: all 0.1s;
+            box-shadow: 4px 4px 0px #ffffff;
+        }
+        
+        .choice-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: none;
+        }
+        
+        .choice-btn:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="story-text">
+        <!-- 剧情内容 -->
+    </div>
+</div>
+
+<script>
+    const storyTextEl = document.getElementById('story-text');
+
+    // 打印文字函数
+    function printText(text, cssClass = 'narrator') {
+        const formattedText = text.split('\n').filter(p => p.trim() !== '').join(`</p><p class="p ${cssClass}">`);
+        storyTextEl.innerHTML += `<p class="p ${cssClass}">${formattedText}</p>`;
+        storyTextEl.scrollTop = storyTextEl.scrollHeight;
+    }
+
+    // 跳转逻辑
+    function goTo(pageName) {
+        window.location.href = pageName;
+    }
+
+    // --- 页面初始化 ---
+    window.onload = function() {
+        // 标题
+        const title = `
+        <div style="text-align:center; font-size:14px; border-bottom:2px solid #fff; padding-bottom:15px; margin-bottom:20px;">
+            [ 最 后 的 总 结 ]
+        </div>
+        `;
+        printText(title, 'highlight');
+
+        // 1. 开篇对话
+        printText("嗯......好吧，这原本也不在我们的工作氛围之内......", 'highlight');
+        printText("但相应的，我也不能告诉你，你为什么无法看见尸体和血迹。", 'narrator');
+        printText("那么，我们来简单总结一遍吧......", 'highlight');
+
+        // 2. 人物身份解析
+        printText(`<div class="chapter-title">人 物 身 份 剖 析</div>`);
+        
+        const identities = [
+            "托尔斯特·博尔孔斯基，身份不明，但从语言可以听出是俄国人。",
+            "洛德维奇兄弟，西蒙·洛德维奇为哥哥，而安尼·洛德维奇为弟弟，两人曾经就在其他的城市抢劫过，并且根据反应来看，应该是杀过人的。",
+            "凯恩·安迪纳斯和安德烈·奥古斯特的两个美国人，但私下里，两人保持着另一层关系——同性恋，两人因为在原本的城市被发现其秘密，而不得不离开。除此之外，安德烈·奥古斯特歧视着托尔斯特·博尔孔斯基。",
+            "艾萨克·斯托尔特和安娜·菲奥波普，分别为旅馆厨师和旅馆女佣，其艾萨克·斯托尔特和安娜·菲奥波普为互相暗恋的关系。",
+            "玛利娅·赛尔纳斯，旅馆老板，有着食人的癖好，但具体细节不得而知，奥格伯德·凯维奇，玛利娅·赛尔纳斯的爱人，有着暴力倾向。",
+            "安东尼奥·萨拉图多，原为小偷，后逃到这个城市内，在听到洛德维奇兄弟的计划后，主动选择加入。",
+            "尼古莱·威姆斯特，过往身份不明，来历不明，可能为非法移民。"
+        ];
+
+        identities.forEach(text => {
+            printText(text, 'narrator');
+        });
+
+        // 3. 案件还原
+        printText(`<div class="chapter-title">案 件 还 原</div>`);
+        printText("某一日，托尔斯特·博尔孔斯基在偶然间发现了玛利娅·赛尔纳斯食人的秘密，随后，选择对其进行私刑，即是让玛利娅·赛尔纳斯得到应有的惩罚，也是为了给死去的人一个交代，而在当日，或者第二日，洛德维奇兄弟密谋抢劫，安东尼奥·萨拉图多主动加入抢劫计划。", 'narrator');
+        printText("几日后，案件发生，当日奥格伯德·凯维奇因为某种原因不在旅馆内。", 'narrator');
+        printText("随后，在一楼无人时，托尔斯特·博尔孔斯基拿着斧头，来到了旅馆老板的房间，使用斧头将玛利娅·赛尔纳斯杀害，随后将玛利娅·赛尔纳斯藏入衣柜之内，而后躲藏在了旅馆内......", 'narrator');
+        printText("但在出门时，遇见了安德烈·奥古斯特，随后安德烈·奥古斯特发现托尔斯特·博尔孔斯基杀人的事情，托尔斯特·博尔孔斯基选择杀死他。", 'narrator');
+
+        printText("而后，在凯恩·安迪纳斯听见声响后，立马下楼查看，但只看见了安德烈·奥古斯特的尸体，而后，他选择将安德烈·奥古斯特的尸体抱回房间，随后在房间内抽起了仅剩的大麻。", 'narrator');
+        printText("而听到声响的安娜·菲奥波普选择逃跑，但听见了楼上传来的声响，选择躲藏一会，在躲藏前，去厨房拿了一把餐刀进行防身。", 'narrator');
+        printText("此刻，洛德维奇兄弟和安东尼奥·萨拉图多借着旅馆内的混乱，选择从楼上下来开始计划，随后，西蒙·洛德维奇去厨房拿了一把餐刀望风，而安东尼奥·萨拉图多和安尼·洛德维奇负责进入旅馆老板的房间，翻找财物。", 'narrator');
+
+        printText("而楼上，凯恩·安迪纳斯因为抽大麻过多，导致出现幻觉，误以为安德烈·奥古斯特并没有死亡，还陪伴在自己的身边，随后拿起了枕头下藏着的左轮手枪，开始装填子弹，但因为幻觉的缘故，留下了一颗子弹，所以左轮内装填了四发子弹，下楼准备将托尔斯特·博尔孔斯基射杀。", 'narrator');
+        printText("在下楼后，刚好碰到了想要逃跑的安娜·菲奥波普，随后将其认成了打猎的水鸭，安娜·菲奥波普被枪杀。", 'narrator');
+
+        printText("随后，在厨房悄悄隐藏的艾萨克·斯托尔特，亲眼目睹凯恩·安迪纳斯枪杀安娜·菲奥波普，随后使用厨刀，抓准时机偷袭凯恩·安迪纳斯，将其刺死，获得了左轮手枪。", 'narrator');
+        printText("只不过，在杀完人后，沾了一身血的艾萨克·斯托尔特回到了自己的房间，开始出现幻觉。", 'narrator');
+
+        printText("而此刻，听见枪声躲入仓库的西蒙·洛德维奇走出西蒙·洛德维奇，随后碰见了想要离开的尼古莱·威姆斯特，但尼古莱·威姆斯特并不懂德语，随后，西蒙·洛德维奇注意到信封内鼓鼓的，而后开始争抢，随后，信封在打斗中被拆开，英镑撒了一地，而后，西蒙·洛德维奇选择杀死尼古莱·威姆斯特，将三百英镑据为己有。", 'narrator');
+
+        printText("另一边，在旅馆老板的房间内搜索时，安尼·洛德维奇在打开衣柜想要搜索财物时，偶然发现了被托尔斯特·博尔孔斯基藏入衣柜的尸体，最终选择只将床头柜的财物拿走，不多做逗留。", 'narrator');
+        printText("但随后，西蒙·洛德维奇被听到声响下楼的艾萨克·斯托尔特给发现，而后，艾萨克·斯托尔特威胁三人进入地下室，但在艾萨克·斯托尔特的看不到的死角，安尼·洛德维奇在厨房拿了一把厨刀藏在了身上，洛德维奇兄弟听不懂法语，而安东尼奥·萨拉图则是会讲一些法语，但西蒙·洛德维奇选择夺枪。", 'narrator');
+
+        printText("最终，西蒙·洛德维奇和安东尼奥·萨拉图被艾萨克·斯托尔特射杀，而在他被血溅到脸上，忍不住闭眼的时候，安尼·洛德维奇瞬间冲出，随后将艾萨克·斯托尔特捅死......", 'narrator');
+        printText("而在简单振作后，安尼·洛德维奇收拾起散落的钱财，准备离开，但在走出地下室后，被回到旅馆埋伏着的奥格伯德·凯维奇偷袭打倒在地，而奥格伯德·凯维奇认为是安尼·洛德维奇三人，为了钱财杀了玛利娅·赛尔纳斯，随后让安尼·洛德维奇因为窒息而死（被掐死或者被勒死）。", 'narrator');
+
+        printText("但就在奥格伯德·凯维奇准备处理现场之际，随后撞见了躲藏结束，想要离开旅馆的托尔斯特·博尔孔斯基......", 'narrator');
+        printText("捡起枪的奥格伯德·凯维奇在旅馆内寻找着托尔斯特·博尔孔斯基，随后被隐藏在拐角的托尔斯特·博尔孔斯基用斧头砍断了左手掌，但奥格伯德·凯维奇也在瞬间开出枪，但因为受伤，奥格伯德·凯维奇身体不稳，所以子弹只打中了托尔斯特·博尔孔斯基的左肩。", 'narrator');
+        printText("随后，托尔斯特·博尔孔斯基使用斧头将奥格伯德·凯维奇杀死，最终下落不明。", 'narrator');
+
+        // 4. 结语
+        printText(`<div class="chapter-title">结 语</div>`);
+        printText("干得好，你查明了真相，我们该走了。", 'highlight');
+
+        // 5. 选项按钮（重来一次）
+        const choicesHtml = `
+            <div id="choices-container">
+                <button class="choice-btn" onclick="goTo('index.html')">> 重来一次？</button>
+            </div>
+        `;
+        storyTextEl.innerHTML += choicesHtml;
+    };
+</script>
+</body>
+</html>

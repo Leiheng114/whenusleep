@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛尔纳斯旅馆 - 人员名单</title>
+    <!-- 引入像素字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* 1-bit 全局暗黑框架 */
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Press Start 2P', 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-image: radial-gradient(#000 10%, transparent 10%);
+            background-size: 2px 2px;
+        }
+
+        #game-container {
+            width: 95%;
+            max-width: 800px;
+            background-color: #000000;
+            border: 4px solid #ffffff;
+            padding: 20px;
+            box-shadow: 8px 8px 0px rgba(255, 255, 255, 0.2);
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        #story-text {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            line-height: 1.8;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            white-space: pre-wrap;
+        }
+
+        #story-text::-webkit-scrollbar {
+            width: 6px;
+        }
+        #story-text::-webkit-scrollbar-track {
+            background: #000;
+            border-left: 1px solid #fff;
+        }
+        #story-text::-webkit-scrollbar-thumb {
+            background: #fff;
+        }
+
+        .p { margin-bottom: 15px; }
+        .highlight { color: #ffffff; font-weight: bold; }
+        .subtitle { color: #aaaaaa; font-size: 10px; text-align: center; margin-bottom: 20px;}
+
+        /* --- 人员名单卡片风格 --- */
+        .group-title {
+            background-color: #ffffff;
+            color: #000000;
+            padding: 8px 15px;
+            display: inline-block;
+            margin-bottom: 15px;
+            margin-top: 10px;
+            font-size: 11px;
+        }
+
+        .person-card {
+            border: 1px solid #333;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0a0a0a;
+        }
+
+        .person-name {
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .person-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .tag {
+            color: #888888;
+            font-size: 9px;
+            background: #1a1a1a;
+            padding: 3px 8px;
+            border: 1px solid #333;
+            white-space: nowrap;
+        }
+
+        /* 特殊数字标记样式 */
+        .number-mark {
+            color: #ffffff;
+            font-size: 9px;
+            background: #1a1a1a;
+            padding: 2px 8px;
+            border: 1px solid #ffffff;
+        }
+
+        .number-mark-erased {
+            color: #555555;
+            font-size: 9px;
+            background: #1a1a1a;
+            padding: 2px 8px;
+            border: 1px dashed #555555;
+            font-style: italic;
+        }
+
+        /* --- 返回按钮 --- */
+        .pixel-btn {
+            background: #000; color: #ffffff; border: 2px solid #ffffff;
+            padding: 10px 25px; font-family: inherit; font-size: 11px;
+            cursor: pointer; box-shadow: 4px 4px 0px #ffffff;
+            margin-top: 25px; display: block; margin-left: auto; margin-right: auto;
+        }
+        .pixel-btn:active { transform: translate(4px, 4px); box-shadow: none; }
+        .pixel-btn:hover { background: #ffffff; color: #000000; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="story-text">
+        <!-- 剧情内容 -->
+    </div>
+</div>
+
+<script>
+    const storyTextEl = document.getElementById('story-text');
+
+    // 打印文字函数
+    function printText(text, cssClass = 'narrator') {
+        storyTextEl.innerHTML += `<p class="p ${cssClass}">${text}</p>`;
+        storyTextEl.scrollTop = storyTextEl.scrollHeight;
+    }
+
+    function goBackToLobby() {
+        window.location.href = 'index3.html';
+    }
+
+    // --- 页面初始化 ---
+    window.onload = function() {
+        // 标题
+        const title = `
+        <div style="text-align:center; font-size:14px; border-bottom:2px solid #fff; padding-bottom:15px; margin-bottom:20px;">
+            [ 入住人员名单 ]
+        </div>
+        <p class="subtitle">—— 赛尔纳斯旅馆记录 ——</p>
+        <p style="color:#666; font-size:9px; text-align:center; margin-top:-10px;">（部分名字旁带有模糊的铅笔印记，似乎曾被写过编号）</p>
+        `;
+        printText(title, 'highlight');
+
+        // 1. 长期租客 (7人)
+        const renters = [
+            { name: "托尔斯特·博尔孔斯基", country: "俄国", mark: "4" },
+            { name: "安德烈·奥古斯特", country: "美国", mark: "?" },
+            { name: "西蒙·洛德维奇", country: "德国", mark: "6" },
+            { name: "尼古莱·威姆斯特", country: "英格兰", mark: "?" },
+            { name: "安东尼奥·萨拉图多", country: "波兰", mark: "3" },
+            { name: "安尼·洛德维奇", country: "德国", mark: "?" },
+            { name: "凯恩·安迪纳斯", country: "美国", mark: "2" }
+        ];
+        
+        printText(`<div class="group-title">> 长期租客</div>`, 'highlight');
+        renters.forEach(person => {
+            // 根据是否有数字，决定显示样式
+            let markHtml = '';
+            if (person.mark === '?') {
+                markHtml = `<span class="number-mark-erased">[ 被擦去 ]</span>`;
+            } else {
+                markHtml = `<span class="number-mark">[ ${person.mark} ]</span>`;
+            }
+
+            storyTextEl.innerHTML += `
+                <div class="person-card">
+                    <div class="person-name">
+                        <span>${person.name}</span>
+                        ${markHtml}
+                    </div>
+                    <div class="person-tags">
+                        <span class="tag">[ ${person.country} ]</span>
+                        <span class="tag">[ 租客 ]</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        // 2. 旅店经营者与员工 (4人)
+        printText(`<div class="group-title" style="margin-top:25px;">> 旅店经营及员工</div>`, 'highlight');
+        const staff = [
+            { name: "玛利娅·赛尔纳斯", country: "法兰西", role: "旅店老板", mark: "10" },
+            { name: "奥格伯德·凯维奇", country: "法兰西", role: "二老板 / 玛利娅的爱人", mark: "10" },
+            { name: "艾萨克·斯托尔特", country: "法兰西", role: "厨师", mark: "1" },
+            { name: "安娜·菲奥波普", country: "法兰西", role: "女佣", mark: "?" }
+        ];
+        staff.forEach(person => {
+            // 为老板和二老板增加边框高亮
+            const cardHighlight = (person.role.includes("老板")) ? 'style="border-color:#555;"' : '';
+            
+            let markHtml = '';
+            if (person.mark === '?') {
+                markHtml = `<span class="number-mark-erased">[ 被擦去 ]</span>`;
+            } else {
+                markHtml = `<span class="number-mark">[ ${person.mark} ]</span>`;
+            }
+
+            storyTextEl.innerHTML += `
+                <div class="person-card" ${cardHighlight}>
+                    <div class="person-name">
+                        <span>${person.name}</span>
+                        ${markHtml}
+                    </div>
+                    <div class="person-tags">
+                        <span class="tag" style="${cardHighlight ? 'border-color:#555; color:#aaa;' : ''}">[ ${person.country} ]</span>
+                        <span class="tag" style="${cardHighlight ? 'border-color:#555; color:#aaa;' : ''}">[ ${person.role} ]</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        // 底部批注（增强悬疑感）
+        printText(`<p style="color:#666; font-size:9px; margin-top:20px; text-align:center;">（你注意到，有几位名字旁边残留着被橡皮用力擦除过的痕迹，已经无法辨认原本的数字。这种编号方式似乎另有隐情……）</p>`);
+
+        // 返回按钮
+        storyTextEl.innerHTML += `<button class="pixel-btn" onclick="goBackToLobby()">放下名单</button>`;
+    };
+</script>
+</body>
+</html>

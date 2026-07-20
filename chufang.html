@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛尔纳斯旅馆 - 一楼厨房</title>
+    <!-- 引入像素字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* 1-bit 全局暗黑框架 */
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Press Start 2P', 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-image: radial-gradient(#000 10%, transparent 10%);
+            background-size: 2px 2px;
+        }
+
+        #game-container {
+            width: 95%;
+            max-width: 800px;
+            background-color: #000000;
+            border: 4px solid #ffffff;
+            padding: 20px;
+            box-shadow: 8px 8px 0px rgba(255, 255, 255, 0.2);
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        #story-text {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            line-height: 1.8;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            white-space: pre-wrap;
+        }
+
+        #story-text::-webkit-scrollbar {
+            width: 6px;
+        }
+        #story-text::-webkit-scrollbar-track {
+            background: #000;
+            border-left: 1px solid #fff;
+        }
+        #story-text::-webkit-scrollbar-thumb {
+            background: #fff;
+        }
+
+        .p { margin-bottom: 15px; }
+        .highlight { color: #ffffff; font-weight: bold; }
+
+        /* --- 选项按钮容器 --- */
+        #choices-container {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            align-items: center;
+        }
+
+        /* --- 像素风格选项按钮 --- */
+        .choice-btn {
+            background: #000;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            padding: 12px 20px;
+            font-family: inherit;
+            font-size: 11px;
+            cursor: pointer;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            transition: all 0.1s;
+            box-shadow: 4px 4px 0px #ffffff;
+        }
+        
+        .choice-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: none;
+        }
+        
+        .choice-btn:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="story-text">
+        <!-- 剧情与选项 -->
+    </div>
+</div>
+
+<script>
+    const storyTextEl = document.getElementById('story-text');
+
+    // 打印文字函数
+    function printText(text, cssClass = 'narrator') {
+        storyTextEl.innerHTML += `<p class="p ${cssClass}">${text}</p>`;
+        storyTextEl.scrollTop = storyTextEl.scrollHeight;
+    }
+
+    // --- 跳转逻辑 ---
+    function goTo(pageName) {
+        window.location.href = pageName;
+    }
+
+    // --- 页面初始化 ---
+    window.onload = function() {
+        // 场景描述
+        const scene = `
+        <div style="text-align:center; font-size:14px; border-bottom:2px solid #fff; padding-bottom:15px; margin-bottom:20px;">
+            [ 一 楼 厨 房 ]
+        </div>
+
+        你进入了厨房。
+        这里看起来并没有比大堂好多少。
+
+        随后，你环顾四周，发现了一些奇怪的地方。
+        这里的厨具都摆放得十分凌乱，并且还有一些掉落到了地上。
+
+        不如说，是因为某种碰撞而导致的。
+        `;
+        printText(scene, 'highlight');
+
+        // 生成选项
+        const choicesHtml = `
+            <div id="choices-container">
+                <button class="choice-btn" onclick="goTo('index3.html')">> 离开厨房</button>
+                <button class="choice-btn" onclick="goTo('chufang2.html')">> 仔细查看</button>
+                <button class="choice-btn" onclick="goTo('meat.html')">> 查看厨房里的那些散落在地上的肉干</button>
+            </div>
+        `;
+        
+        storyTextEl.innerHTML += choicesHtml;
+    };
+</script>
+</body>
+</html>

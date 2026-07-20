@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛尔纳斯旅馆 - 遗言</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* 1-bit 核心框架 */
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Press Start 2P', 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-image: radial-gradient(#000 10%, transparent 10%);
+            background-size: 2px 2px;
+        }
+
+        #game-container {
+            width: 95%;
+            max-width: 800px;
+            background-color: #000000;
+            border: 4px solid #ffffff;
+            padding: 20px;
+            box-shadow: 8px 8px 0px rgba(255, 255, 255, 0.2);
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        #story-text {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            line-height: 1.8;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            white-space: pre-wrap;
+        }
+
+        #story-text::-webkit-scrollbar {
+            width: 6px;
+        }
+        #story-text::-webkit-scrollbar-track {
+            background: #000;
+            border-left: 1px solid #fff;
+        }
+        #story-text::-webkit-scrollbar-thumb {
+            background: #fff;
+        }
+
+        .p {
+            margin-bottom: 24px;
+        }
+
+        .letter-text {
+            color: #e0e0e0;
+            line-height: 2.2;
+        }
+
+        /* 蓝色像素按钮 */
+        .pixel-btn {
+            background: #000;
+            color: #4169E1;      /* 蓝色字体 */
+            border: 2px solid #4169E1; /* 蓝色边框 */
+            padding: 12px 30px;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px #4169E1;
+            margin-top: 40px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .pixel-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: none;
+        }
+        .pixel-btn:hover {
+            background: #111;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="story-text">
+        <!-- 剧情渲染区 -->
+    </div>
+</div>
+
+<script>
+    const storyTextEl = document.getElementById('story-text');
+
+    // 打印文字函数
+    function printText(text, cssClass = 'narrator') {
+        const formattedText = text.split('\n').filter(p => p.trim() !== '').join(`</p><p class="p ${cssClass}">`);
+        storyTextEl.innerHTML += `<p class="p ${cssClass}">${formattedText}</p>`;
+        storyTextEl.scrollTop = storyTextEl.scrollHeight;
+    }
+
+    // 跳转逻辑
+    function proceedToNext() {
+        // 延迟 0.5 秒直接跳转，让按钮有被按下的感觉
+        setTimeout(() => {
+            window.location.href = 'index3.html';
+        }, 500);
+    }
+
+    // --- 初始化页面 ---
+    window.onload = function() {
+        // 仅输出信件正文，无其他修饰
+        const content = `
+        <p class="p letter-text">
+        “您好，我的朋友。<br><br>
+        当你看到这段话时，想必您已经跟着我进入了这间旅馆。<br><br>
+        我知道接下来会发生什么，所以我需要您帮我一个忙。<br><br>
+        拜托您查清这间旅馆发生的事情，这对我十分重要。<br><br>
+        除此之外，请让我事先告诉您，您无法看见尸体和血迹，但对应的，您可以“听见一些奇怪的声音”，声音有可能是发卡，也有可能是刀，但他们都或多或少的可以给予您线索。虽然我知道其中的隐情，但请允许我暂时保密。”
+        </p>
+        `;
+        printText(content);
+
+        // 添加“我明白了”蓝色按钮
+        storyTextEl.innerHTML += `<button id="agree-btn" class="pixel-btn">我 明 白 了</button>`;
+
+        // 绑定点击事件
+        document.getElementById('agree-btn').addEventListener('click', proceedToNext);
+    };
+</script>
+</body>
+</html>

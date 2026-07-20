@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛尔纳斯旅馆 - 1-bit 像素冒险</title>
+    <!-- 引入像素风格字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* 1-bit 极简风格：黑与白 */
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Press Start 2P', 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-image: radial-gradient(#000 10%, transparent 10%);
+            background-size: 2px 2px;
+        }
+
+        #game-container {
+            width: 95%;
+            max-width: 800px;
+            background-color: #000000;
+            border: 4px solid #ffffff;
+            padding: 20px;
+            box-shadow: 8px 8px 0px rgba(255, 255, 255, 0.2);
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        #story-text {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            line-height: 1.8;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            white-space: pre-wrap;
+        }
+
+        /* 1-bit 极简滚动条 */
+        #story-text::-webkit-scrollbar {
+            width: 6px;
+        }
+        #story-text::-webkit-scrollbar-track {
+            background: #000;
+            border-left: 1px solid #fff;
+        }
+        #story-text::-webkit-scrollbar-thumb {
+            background: #fff;
+        }
+
+        .p {
+            margin-bottom: 20px;
+        }
+
+        /* 文字颜色分类 */
+        .narrator {
+            color: #aaaaaa; 
+        }
+        .highlight {
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .title {
+            color: #ffffff;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* 像素风的按钮与链接 */
+        .pixel-btn {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px #fff;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .pixel-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: none;
+        }
+        .pixel-btn:hover {
+            background: #ddd;
+        }
+        
+        /* 输入区（准备接续 index2 的逻辑，暂时隐藏） */
+        #input-area {
+            display: none;
+            margin-top: 20px;
+            border-top: 2px solid #fff;
+            padding-top: 15px;
+            align-items: center;
+        }
+        #input-prompt {
+            color: #ffffff;
+            margin-right: 15px;
+        }
+        #user-input {
+            background: transparent;
+            border: 2px solid #fff;
+            color: #fff;
+            flex-grow: 1;
+            outline: none;
+            font-family: inherit;
+            font-size: 12px;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        #user-input:focus {
+            background-color: #111;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="story-text">
+        <!-- 剧情将动态渲染到这里 -->
+    </div>
+    
+    <div id="input-area">
+        <span id="input-prompt">></span>
+        <input type="text" id="user-input" placeholder="输入指令..." autofocus>
+    </div>
+</div>
+
+<script>
+    const storyTextEl = document.getElementById('story-text');
+
+    // 打印文字函数
+    function printText(text, cssClass = 'narrator') {
+        const formattedText = text.split('\n').filter(p => p.trim() !== '').join(`</p><p class="p ${cssClass}">`);
+        storyTextEl.innerHTML += `<p class="p ${cssClass}">${formattedText}</p>`;
+        storyTextEl.scrollTop = storyTextEl.scrollHeight;
+    }
+
+    // 处理“开始吧”按钮逻辑（跳转页面）
+    function startInvestigation() {
+        printText("你推开了赛尔纳斯旅馆的大门，一股陈旧的腐败气息扑面而来...", 'highlight');
+        printText("正在载入调查现场...");
+        
+        // 延迟一秒后执行跳转，给玩家一点剧情感
+        setTimeout(() => {
+            // 尝试跳转到 index2.html
+            window.location.href = 'index2.html';
+        }, 1200);
+    }
+
+    // --- 初始化 ---
+    window.onload = function() {
+        // 使用全大写增加1-bit叙事感
+        const intro = `
+        <div class="title">赛 尔 纳 斯 旅 馆</div>
+
+        18XX 年，T 城。
+
+        阴雨连绵的夜晚，路灯闪烁着昏黄的光。
+        一名青年伫立在街角，凝视着前方一栋老旧的建筑——
+        招牌上写着：赛尔纳斯旅馆。
+
+        他神情恍惚，似乎陷入了短暂的失神。
+        随后，记忆如潮水般涌回。
+
+        他的瞳孔骤然收缩。
+
+        他来这里，是为了查明真相。
+        查明那场造成旅馆内【十三人离奇死亡】的惨案。
+        查明这一切究竟是如何发生的。
+
+        他知道，一旦踏进去，就再也无法回头了。
+        `;
+        printText(intro, 'highlight');
+
+        // 添加“开始吧”按钮
+        storyTextEl.innerHTML += `<button id="start-btn" class="pixel-btn">开 始 吧</button>`;
+
+        // 绑定点击事件
+        document.getElementById('start-btn').addEventListener('click', startInvestigation);
+    };
+</script>
+</body>
+</html>

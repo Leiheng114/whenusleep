@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛尔纳斯旅馆 - 来自远方的信</title>
+    <!-- 引入像素字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* 1-bit 全局暗黑框架 */
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Press Start 2P', 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-image: radial-gradient(#000 10%, transparent 10%);
+            background-size: 2px 2px;
+        }
+
+        #game-container {
+            width: 95%;
+            max-width: 800px;
+            background-color: #000000;
+            border: 4px solid #ffffff;
+            padding: 20px;
+            box-shadow: 8px 8px 0px rgba(255, 255, 255, 0.2);
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        #story-text {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            line-height: 1.8;
+            font-size: 10.5px; /* ✅ 从 9px 调整为 10.5px，略微增大 */
+            letter-spacing: 0.5px;
+            white-space: pre-wrap;
+        }
+
+        #story-text::-webkit-scrollbar {
+            width: 6px;
+        }
+        #story-text::-webkit-scrollbar-track {
+            background: #000;
+            border-left: 1px solid #fff;
+        }
+        #story-text::-webkit-scrollbar-thumb {
+            background: #fff;
+        }
+
+        .p { margin-bottom: 15px; }
+        .highlight { color: #ffffff; font-weight: bold; }
+        .letter-text { color: #dddddd; }
+
+        /* --- 选项按钮容器 --- */
+        #choices-container {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            align-items: center;
+        }
+
+        /* --- 像素风格选项按钮 --- */
+        .choice-btn {
+            background: #000;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            padding: 12px 20px;
+            font-family: inherit;
+            font-size: 11px;
+            cursor: pointer;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            transition: all 0.1s;
+            box-shadow: 4px 4px 0px #ffffff;
+        }
+        
+        .choice-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: none;
+        }
+        
+        .choice-btn:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="story-text">
+        <!-- 剧情内容 -->
+    </div>
+</div>
+
+<script>
+    const storyTextEl = document.getElementById('story-text');
+
+    // 打印文字函数
+    function printText(text, cssClass = 'narrator') {
+        const formattedText = text.split('\n').filter(p => p.trim() !== '').join(`</p><p class="p ${cssClass}">`);
+        storyTextEl.innerHTML += `<p class="p ${cssClass}">${formattedText}</p>`;
+        storyTextEl.scrollTop = storyTextEl.scrollHeight;
+    }
+
+    // 跳转逻辑
+    function goTo(pageName) {
+        window.location.href = pageName;
+    }
+
+    // --- 页面初始化 ---
+    window.onload = function() {
+        // 标题
+        const title = `
+        <div style="text-align:center; font-size:14px; border-bottom:2px solid #fff; padding-bottom:15px; margin-bottom:20px;">
+            [ 致 我 亲 爱 的 朋 友 ]
+        </div>
+        `;
+        printText(title, 'highlight');
+
+        // 信件内容
+        const letter = `
+        您好，我的朋友，想必当您看到这封信时，你已经完全了解了案件的真相。
+
+        那么，我也就不过多赘述了，我便直接告诉您，为什么您会如此奇特吧。
+
+        自从案件后，我便回到了我的祖国，但从那件事情后，我的思想有了很大的改观。
+
+        我发现“杀死一个坏人，造福好人”，也算是犯罪，当然，这可能听起来有些怪，您就当我是疯了吧。
+
+        实际上，我不止一次在想，如果可以，我会选择不杀死安德烈·奥古斯特先生。
+
+        但这并不意味着，我会后悔杀死玛利娅·赛尔纳斯和奥格伯德·凯维奇，我始终认为，他们是有罪的，但我承认，我不该动用私刑。
+
+        所以我接受了属于我的惩罚，我做了个交易，我交出了我的左眼，使您得到了可以“听到声音”的能力，但相对的，您无法看见血迹和尸体。
+
+        我认为，我该受的罪远远不止于此，我杀死了三个人，夺取了三个人的生命。
+
+        但我做这件事情的目的不仅是为了赎罪，我想让更多人知道那两个无辜的人，那两个甜蜜的伴侣。
+
+        梅琳·安格斯特和帕特里克·安利纳斯。
+
+        他们多么年轻啊，他们本可以有着一个好的未来，有个美好的家庭......
+
+        但玛利娅·赛尔纳斯和奥格伯德·凯维奇却残忍杀害了他们。
+
+        我实在无法忍受这种事情，并且，每当我想到，除了梅琳·安格斯特和帕特里克·安利纳斯以外，会不会还有第二个帕特里克·安利纳斯，第三个梅琳·安格斯特？
+
+        想一想，他们的家人，他们的朋友，在某一日突然发现两人就这么消失了，会多么的伤心，多么的难过啊。
+
+        他们承受的痛苦难道不应该由玛利娅·赛尔纳斯和奥格伯德·凯维奇来偿还吗？
+
+        先生，当您看到这的时候，这封信也差不多到结尾了，也许您会有疑问，我自从离开旅馆后，到底在干什么？
+
+        如今，我在一家教堂内当工作人员，我想，我一辈子都会待在这里赎罪，对此，我无怨无悔。
+
+        我感谢您，我在此真挚的感谢您查清了整件事情的真相，让更多人得知了真相。
+
+        您当之无愧。
+
+        ——托尔斯特·博尔孔斯基
+        `;
+        printText(letter, 'letter-text');
+
+        // 选项按钮（重来一次）
+        const choicesHtml = `
+            <div id="choices-container">
+                <button class="choice-btn" onclick="goTo('index.html')">> 再来一次？</button>
+            </div>
+        `;
+        storyTextEl.innerHTML += choicesHtml;
+    };
+</script>
+</body>
+</html>

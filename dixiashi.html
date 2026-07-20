@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛尔纳斯旅馆 - 地下室</title>
+    <!-- 引入像素字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* 1-bit 全局暗黑框架 */
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Press Start 2P', 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-image: radial-gradient(#000 10%, transparent 10%);
+            background-size: 2px 2px;
+        }
+
+        #game-container {
+            width: 95%;
+            max-width: 800px;
+            background-color: #000000;
+            border: 4px solid #ffffff;
+            padding: 20px;
+            box-shadow: 8px 8px 0px rgba(255, 255, 255, 0.2);
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        #story-text {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            line-height: 1.8;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            white-space: pre-wrap;
+        }
+
+        #story-text::-webkit-scrollbar {
+            width: 6px;
+        }
+        #story-text::-webkit-scrollbar-track {
+            background: #000;
+            border-left: 1px solid #fff;
+        }
+        #story-text::-webkit-scrollbar-thumb {
+            background: #fff;
+        }
+
+        .p { margin-bottom: 15px; }
+        .highlight { color: #ffffff; font-weight: bold; }
+
+        /* --- 选项按钮容器 --- */
+        #choices-container {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            align-items: center;
+        }
+
+        /* --- 像素风格选项按钮 --- */
+        .choice-btn {
+            background: #000;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            padding: 12px 20px;
+            font-family: inherit;
+            font-size: 10px;
+            cursor: pointer;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            transition: all 0.1s;
+            box-shadow: 4px 4px 0px #ffffff;
+        }
+        
+        .choice-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: none;
+        }
+        
+        .choice-btn:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="story-text">
+        <!-- 剧情与选项 -->
+    </div>
+</div>
+
+<script>
+    const storyTextEl = document.getElementById('story-text');
+
+    // 打印文字函数
+    function printText(text, cssClass = 'narrator') {
+        storyTextEl.innerHTML += `<p class="p ${cssClass}">${text}</p>`;
+        storyTextEl.scrollTop = storyTextEl.scrollHeight;
+    }
+
+    // --- 跳转逻辑 ---
+    function goTo(pageName) {
+        window.location.href = pageName;
+    }
+
+    // --- 页面初始化 ---
+    window.onload = function() {
+        // 检查是否已获得煤油灯
+        const hasLamp = localStorage.getItem('has_oil_lamp') === 'true';
+
+        if (!hasLamp) {
+            // === 未获得煤油灯时的阻断（还原之前的逻辑） ===
+            const scene = `
+            <div style="text-align:center; font-size:14px; border-bottom:2px solid #fff; padding-bottom:15px; margin-bottom:20px;">
+                [ 地 下 室 ]
+            </div>
+
+            你推开了地下室的门。
+            你进入了地下室，这里阴暗，狭小，死寂。
+
+            无边无际的黑暗仿佛笼罩着你，你甚至能听到自己的心跳在石壁间回荡。
+
+            “我不想进去，我至少得找到光源。”
+
+            随后，你赶紧走出了地下室的门。
+            `;
+            printText(scene, 'highlight');
+
+            // 生成选项（只能回到大堂）
+            const choicesHtml = `
+            <div id="choices-container">
+                <button class="choice-btn" onclick="goTo('index3.html')">> 回到大堂</button>
+            </div>
+            `;
+            storyTextEl.innerHTML += choicesHtml;
+            return; // 结束执行
+        }
+
+        // === 已获得煤油灯，显示完整场景 ===
+        const scene = `
+        <div style="text-align:center; font-size:14px; border-bottom:2px solid #fff; padding-bottom:15px; margin-bottom:20px;">
+            [ 地 下 室 ]
+        </div>
+
+        你提着煤油灯进入了地下室，这里阴暗，狭小，死寂。
+
+        随后，凭借着煤油灯的灯光，你得以看清这里的场景。
+
+        地上散落着许多的英镑，而地下室的墙角则是一把左轮手枪，附近散落着三个弹壳，除此之外，在手枪的旁边，还有着一把厨刀。
+        `;
+        printText(scene, 'highlight');
+
+        // 生成选项
+        const choicesHtml = `
+            <div id="choices-container">
+                <button class="choice-btn" onclick="goTo('index3.html')">> 回到大堂</button>
+                <button class="choice-btn" onclick="goTo('gun.html')">> 查看手枪</button>
+                <button class="choice-btn" onclick="goTo('knife3.html')">> 查看厨刀</button>
+                <button class="choice-btn" onclick="goTo('money.html')">> 查看英镑</button>
+            </div>
+        `;
+        
+        storyTextEl.innerHTML += choicesHtml;
+    };
+</script>
+</body>
+</html>

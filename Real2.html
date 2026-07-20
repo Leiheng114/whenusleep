@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛尔纳斯旅馆 - 真正的答案</title>
+    <!-- 引入像素字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* 1-bit 全局暗黑框架 */
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Press Start 2P', 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-image: radial-gradient(#000 10%, transparent 10%);
+            background-size: 2px 2px;
+        }
+
+        #game-container {
+            width: 95%;
+            max-width: 800px;
+            background-color: #000000;
+            border: 4px solid #ffffff;
+            padding: 20px;
+            box-shadow: 8px 8px 0px rgba(255, 255, 255, 0.2);
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        #story-text {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            line-height: 1.8;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            white-space: pre-wrap;
+        }
+
+        #story-text::-webkit-scrollbar {
+            width: 6px;
+        }
+        #story-text::-webkit-scrollbar-track {
+            background: #000;
+            border-left: 1px solid #fff;
+        }
+        #story-text::-webkit-scrollbar-thumb {
+            background: #fff;
+        }
+
+        .p { margin-bottom: 15px; }
+        .highlight { color: #ffffff; font-weight: bold; }
+        .subtitle { color: #aaaaaa; font-size: 9px; margin-top: 5px; }
+
+        /* --- 输入框容器 --- */
+        #input-container {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .input-label {
+            color: #aaaaaa;
+            font-size: 10px;
+            margin-bottom: 8px;
+        }
+
+        .name-input {
+            background: #000;
+            border: 2px solid #ffffff;
+            color: #fff;
+            font-family: inherit;
+            font-size: 11px;
+            padding: 10px;
+            width: 100%;
+            outline: none;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        
+        .name-input:focus {
+            background: #111;
+        }
+
+        /* --- 提交按钮 --- */
+        .submit-btn {
+            background: #000;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            padding: 12px 20px;
+            font-family: inherit;
+            font-size: 11px;
+            cursor: pointer;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            transition: all 0.1s;
+            box-shadow: 4px 4px 0px #ffffff;
+            margin-top: 10px;
+        }
+        
+        .submit-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: none;
+        }
+        
+        .submit-btn:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        /* --- 错误提示 --- */
+        #error-message {
+            color: #ff6666;
+            font-size: 9px;
+            margin-top: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="story-text">
+        <!-- 剧情与输入框 -->
+    </div>
+    
+    <!-- 错误提示 -->
+    <div id="error-message">你的头又开始疼了……这名字似乎不太对。</div>
+</div>
+
+<script>
+    const storyTextEl = document.getElementById('story-text');
+    const errorMsg = document.getElementById('error-message');
+
+    // 打印文字函数
+    function printText(text, cssClass = 'narrator') {
+        storyTextEl.innerHTML += `<p class="p ${cssClass}">${text}</p>`;
+        storyTextEl.scrollTop = storyTextEl.scrollHeight;
+    }
+
+    // --- 提交答案逻辑 ---
+    function submitNames() {
+        const maleName = document.getElementById('male_name').value.trim();
+        const femaleName = document.getElementById('female_name').value.trim();
+
+        // 正确答案
+        const correctMale = "帕特里克·安利纳斯";
+        const correctFemale = "梅琳·安格斯特";
+
+        // 清空错误提示
+        errorMsg.style.display = 'none';
+
+        // 判断是否完全匹配
+        if (maleName === correctMale && femaleName === correctFemale) {
+            // 答案正确！跳转到最终的真相页面
+            setTimeout(() => {
+                window.location.href = 'Theend2.html';
+            }, 800);
+        } else {
+            // 答案错误，显示提示
+            errorMsg.style.display = 'block';
+            storyTextEl.scrollTop = storyTextEl.scrollHeight;
+        }
+    }
+
+    // --- 页面初始化 ---
+    window.onload = function() {
+        // 场景描述
+        const scene = `
+        <div style="text-align:center; font-size:14px; border-bottom:2px solid #fff; padding-bottom:15px; margin-bottom:20px;">
+            [ 真 正 的 答 案 ]
+        </div>
+
+        噢......我就知道你可以的，毕竟以你的聪明才智不是什么难事......
+
+        <span class="subtitle">那么，他们两个人的名字是什么？</span>
+        `;
+        printText(scene, 'highlight');
+
+        // 生成输入框
+        const inputHtml = `
+            <div id="input-container">
+                <div class="input-group">
+                    <span class="input-label">[ 男 ]</span>
+                    <input type="text" id="male_name" class="name-input" placeholder="输入男性的名字..." autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <span class="input-label">[ 女 ]</span>
+                    <input type="text" id="female_name" class="name-input" placeholder="输入女性的名字..." autocomplete="off">
+                </div>
+                <button class="submit-btn" onclick="submitNames()">> 确认名字</button>
+            </div>
+        `;
+        
+        storyTextEl.innerHTML += inputHtml;
+
+        // 绑定回车键事件，方便玩家快速操作
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const active = document.activeElement;
+                if (active && (active.id === 'male_name' || active.id === 'female_name')) {
+                    submitNames();
+                }
+            }
+        });
+    };
+</script>
+</body>
+</html>

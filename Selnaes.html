@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛尔纳斯旅馆 - 笔记本</title>
+    <!-- 引入像素字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* 1-bit 全局暗黑框架 */
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Press Start 2P', 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-image: radial-gradient(#000 10%, transparent 10%);
+            background-size: 2px 2px;
+        }
+
+        #game-container {
+            width: 95%;
+            max-width: 750px;
+            background-color: #000000;
+            border: 4px solid #ffffff;
+            padding: 20px;
+            box-shadow: 8px 8px 0px rgba(255, 255, 255, 0.2);
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        #story-text {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            line-height: 1.8;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            white-space: pre-wrap;
+        }
+
+        #story-text::-webkit-scrollbar {
+            width: 6px;
+        }
+        #story-text::-webkit-scrollbar-track {
+            background: #000;
+            border-left: 1px solid #fff;
+        }
+        #story-text::-webkit-scrollbar-thumb {
+            background: #fff;
+        }
+
+        .p { margin-bottom: 15px; }
+        .narrator { color: #aaaaaa; }
+        .highlight { color: #ffffff; font-weight: bold; }
+        .unknown { color: #666666; font-style: italic; }
+
+        /* --- 笔记本特有样式 --- */
+        .notebook-title {
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #fff;
+            padding-bottom: 15px;
+        }
+
+        .suspect-line {
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        .suspect-line:hover {
+            background: #111111;
+        }
+        
+        .suspect-name { color: #fff; }
+        .suspect-gender { color: #aaa; font-size: 9px; }
+        .suspect-cause {
+            color: #888;
+            font-size: 10px;
+            background: #111;
+            padding: 2px 6px;
+            border: 1px solid #333;
+        }
+
+        /* 已正确填写的状态 */
+        .suspect-cause.solved {
+            border-color: #ffffff;
+            color: #ffffff;
+            background: #000;
+        }
+
+        /* --- 弹窗/输入框样式 --- */
+        #input-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-box {
+            background: #000;
+            border: 4px solid #fff;
+            padding: 30px;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .modal-title { font-size: 12px; margin-bottom: 20px; }
+        .modal-input {
+            background: #000;
+            border: 2px solid #fff;
+            color: #fff;
+            font-family: inherit;
+            font-size: 11px;
+            padding: 10px;
+            width: 80%;
+            margin-bottom: 20px;
+            outline: none;
+        }
+        .modal-btn {
+            background: #fff;
+            color: #000;
+            border: none;
+            font-family: inherit;
+            font-size: 11px;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        .modal-btn:active { transform: translate(2px, 2px); }
+
+        /* --- 按钮容器 --- */
+        #action-buttons-container {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .pixel-btn {
+            background: #000; color: #ffffff; border: 2px solid #ffffff;
+            padding: 10px 25px; font-family: inherit; font-size: 11px;
+            cursor: pointer; box-shadow: 4px 4px 0px #ffffff;
+            display: block; margin: 0 auto;
+        }
+        .pixel-btn:active { transform: translate(4px, 4px); box-shadow: none; }
+        .pixel-btn:hover { background: #ffffff; color: #000000; }
+
+        /* 重置按钮的特殊样式 */
+        .reset-btn {
+            border-color: #ff6666;
+            color: #ff6666;
+            box-shadow: 4px 4px 0px #ff6666;
+        }
+        .reset-btn:hover {
+            background: #ff6666;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="story-text">
+        <!-- 动态内容 -->
+    </div>
+</div>
+
+<div id="input-modal">
+    <div class="modal-box">
+        <div class="modal-title" id="modal-person-name">记录 [ 某人的 ] 结局</div>
+        <p style="font-size:9px; color:#aaa; margin-bottom:15px;">（请输入死因或真实结局）</p>
+        <input type="text" id="modal-input-text" class="modal-input" placeholder="输入信息...">
+        <div>
+            <button class="modal-btn" onclick="closeModal()">取消</button>
+            <button class="modal-btn" onclick="submitCause()">确认记录</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const storyTextEl = document.getElementById('story-text');
+    const modal = document.getElementById('input-modal');
+    const modalTitle = document.getElementById('modal-person-name');
+    const modalInput = document.getElementById('modal-input-text');
+
+    let currentEditingIndex = -1;
+
+    // 11个人物数据（已移除梅琳与帕特里克）
+    const suspects = [
+        { name: "托尔斯特·博尔孔斯基", gender: "男", cause: "（待查明）", rule: ["下落不明", "失踪"] },
+        { name: "安德烈·奥古斯特", gender: "男", cause: "（待查明）", rule: ["斧头", "砍死", "托尔斯特"] },
+        { name: "西蒙·洛德维奇", gender: "男", cause: "（待查明）", rule: ["艾萨克", "左轮", "射杀"] },
+        { name: "尼古莱·威姆斯特", gender: "男", cause: "（待查明）", rule: ["西蒙", "厨刀", "刺死"] },
+        { name: "安东尼奥·萨拉图多", gender: "男", cause: "（待查明）", rule: ["艾萨克", "左轮", "射杀"] },
+        { name: "玛利娅·赛尔纳斯", gender: "女", cause: "（待查明）", rule: ["托尔斯特", "斧头", "砍死"] },
+        { name: "艾萨克·斯托尔特", gender: "男", cause: "（待查明）", rule: ["安尼", "厨刀", "刺死"] },
+        { name: "奥格伯德·凯维奇", gender: "男", cause: "（待查明）", rule: ["托尔斯特", "斧头", "砍死"] },
+        { name: "安娜·菲奥波普", gender: "女", cause: "（待查明）", rule: ["凯恩", "手枪", "射杀"] },
+        { name: "安尼·洛德维奇", gender: "男", cause: "（待查明）", rule: ["奥格伯德", "勒死", "掐死"] },
+        { name: "凯恩·安迪纳斯", gender: "男", cause: "（待查明）", rule: ["艾萨克", "厨刀", "刺死"] }
+    ];
+
+    function printText(text, cssClass = 'narrator') {
+        storyTextEl.innerHTML += `<p class="p ${cssClass}">${text}</p>`;
+        storyTextEl.scrollTop = storyTextEl.scrollHeight;
+    }
+
+    function goBackToLobby() {
+        window.location.href = 'index3.html';
+    }
+
+    function renderSuspects() {
+        storyTextEl.innerHTML = '';
+        
+        const header = `
+        <div class="notebook-title">[ 赛尔纳斯案件记录 ]</div>
+        <p>这是你随身携带的笔记本，用来记录已经查明的真相。</p>
+        <p>目前，你知道旅馆里一共住着11个人。</p>
+        <p style="color:#666; font-size:10px;">（点击名字框填写结局，填对后将固化记录）</p>
+        <br>
+        `;
+        printText(header, 'highlight');
+
+        suspects.forEach((person, index) => {
+            const savedCause = localStorage.getItem(`suspect_${index}_cause`);
+            let displayCause = person.cause;
+            let isSolved = false;
+
+            if (savedCause) {
+                displayCause = savedCause;
+                isSolved = true;
+            }
+
+            const nameClass = person.name.includes("未知") ? 'unknown' : 'suspect-name';
+            const causeClass = isSolved ? 'suspect-cause solved' : 'suspect-cause';
+            const onclickEvent = isSolved ? '' : `onclick="openModal(${index})"`;
+            
+            const html = `
+                <div class="suspect-line" ${onclickEvent}>
+                    <span class="${nameClass}">${index + 1}. ${person.name}</span>
+                    <span style="display:flex; align-items:center; gap:10px;">
+                        <span class="suspect-gender">[ ${person.gender} ]</span>
+                        <span class="${causeClass}">结局: ${displayCause}</span>
+                    </span>
+                </div>
+            `;
+            storyTextEl.innerHTML += html;
+        });
+
+        // 底部批注
+        printText("<br>笔记本的最后一页是空白的，似乎在等待写下最后的结论。", 'unknown');
+        
+        // 添加底部按钮组
+        const buttonHtml = `
+            <div id="action-buttons-container">
+                <button class="pixel-btn" onclick="goBackToLobby()">合上笔记</button>
+                <button class="pixel-btn reset-btn" onclick="resetAllData()">重新开始思考</button>
+            </div>
+        `;
+        storyTextEl.innerHTML += buttonHtml;
+    }
+
+    function openModal(index) {
+        currentEditingIndex = index;
+        modalTitle.innerText = `记录 [ ${suspects[index].name} ] 的结局`;
+        modalInput.value = '';
+        modal.style.display = 'flex';
+        setTimeout(() => modalInput.focus(), 100);
+    }
+
+    function closeModal() {
+        modal.style.display = 'none';
+        currentEditingIndex = -1;
+    }
+
+    function submitCause() {
+        if (currentEditingIndex === -1) return;
+        const inputValue = modalInput.value.trim();
+        if (!inputValue) {
+            alert("请输入信息再确认！");
+            return;
+        }
+
+        const person = suspects[currentEditingIndex];
+        const rules = person.rule;
+        if (!rules) {
+            alert("我的头开始疼了......也许这样行不通......");
+            return;
+        }
+
+        // 判断输入的文本是否包含规则中的任意关键词
+        let isCorrect = false;
+        for (let i = 0; i < rules.length; i++) {
+            if (inputValue.includes(rules[i])) {
+                isCorrect = true;
+                break;
+            }
+        }
+
+        if (isCorrect) {
+            localStorage.setItem(`suspect_${currentEditingIndex}_cause`, inputValue);
+            closeModal();
+            renderSuspects();
+            checkAllSolved(); // 检查是否全部完成
+        } else {
+            alert("我的头开始疼了......也许这样行不通......");
+        }
+    }
+
+    // --- 检查所有谜题是否已解决 ---
+    function checkAllSolved() {
+        let allSolved = true;
+        for (let i = 0; i < suspects.length; i++) {
+            const saved = localStorage.getItem(`suspect_${i}_cause`);
+            if (!saved) {
+                allSolved = false;
+                break;
+            }
+        }
+
+        if (allSolved) {
+            // 全解锁，跳转至 Real.html
+            setTimeout(() => {
+                window.location.href = 'Real.html';
+            }, 1200);
+        }
+    }
+
+    // --- 重置功能 ---
+    function resetAllData() {
+        if (confirm("确定要擦除所有记录，重新开始思考吗？")) {
+            for (let i = 0; i < suspects.length; i++) {
+                localStorage.removeItem(`suspect_${i}_cause`);
+            }
+            renderSuspects();
+            printText("你深吸一口气，擦去了所有的记录。思绪又回到了原点。", 'highlight');
+        }
+    }
+
+    window.onload = function() {
+        renderSuspects();
+    };
+</script>
+</body>
+</html>
