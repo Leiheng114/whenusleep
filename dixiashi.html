@@ -119,38 +119,7 @@
 
     // --- 页面初始化 ---
     window.onload = function() {
-        // 检查是否已获得煤油灯
-        const hasLamp = localStorage.getItem('has_oil_lamp') === 'true';
-
-        if (!hasLamp) {
-            // === 未获得煤油灯时的阻断（还原之前的逻辑） ===
-            const scene = `
-            <div style="text-align:center; font-size:14px; border-bottom:2px solid #fff; padding-bottom:15px; margin-bottom:20px;">
-                [ 地 下 室 ]
-            </div>
-
-            你推开了地下室的门。
-            你进入了地下室，这里阴暗，狭小，死寂。
-
-            无边无际的黑暗仿佛笼罩着你，你甚至能听到自己的心跳在石壁间回荡。
-
-            “我不想进去，我至少得找到光源。”
-
-            随后，你赶紧走出了地下室的门。
-            `;
-            printText(scene, 'highlight');
-
-            // 生成选项（只能回到大堂）
-            const choicesHtml = `
-            <div id="choices-container">
-                <button class="choice-btn" onclick="goTo('index3.html')">> 回到大堂</button>
-            </div>
-            `;
-            storyTextEl.innerHTML += choicesHtml;
-            return; // 结束执行
-        }
-
-        // === 已获得煤油灯，显示完整场景 ===
+        // === 直接显示地下室完整场景，无需煤油灯限制 ===
         const scene = `
         <div style="text-align:center; font-size:14px; border-bottom:2px solid #fff; padding-bottom:15px; margin-bottom:20px;">
             [ 地 下 室 ]
